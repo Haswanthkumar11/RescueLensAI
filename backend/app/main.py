@@ -36,7 +36,12 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[settings.frontend_origin, "http://localhost:5173"],
+    allow_origins=[
+        settings.frontend_origin, 
+        "http://localhost:5173",
+        "https://rescue-lens-ai.vercel.app",
+        "https://rescue-lens-ai.vercel.app/"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
