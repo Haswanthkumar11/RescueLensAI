@@ -1,210 +1,195 @@
 # 🚑 RescueLens AI
 
-AI-powered emergency image triage for faster disaster response.
+AI-powered emergency image triage and coordination engine for faster disaster response.
 
-This repo is a working scaffold of the architecture described in the project
-brief: React + Vite + Tailwind frontend, FastAPI backend, Gemini 2.5 Flash
-vision analysis, a deterministic risk-scoring engine, and Supabase for storage
-+ database. It runs end-to-end once you add your own API keys — see
-**"Things you must update before this runs"** below.
+![React](https://img.shields.io/badge/React-19-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-Latest-green)
+![Supabase](https://img.shields.io/badge/Supabase-Database-success)
+![Gemini](https://img.shields.io/badge/Gemini-AI-orange)
+![Python](https://img.shields.io/badge/Python-3.12-blue)
+![License](https://img.shields.io/badge/License-MIT-green)
 
-## Project structure
+---
 
+## 🚀 Project Status
+
+✅ **Completed for the NxtWave Idea2Impact Hackathon 2026**
+
+RescueLens AI is a fully functional emergency reporting and operations center platform designed to assist disaster management teams through intelligent image analysis, automated incident scoring, and role-based coordination.
+
+---
+
+## 📌 Demo Configuration
+
+For demonstration and testing purposes:
+- **Email confirmation is disabled** in Supabase Auth to streamline instant registration and sign-in.
+- In production, email verification can be enabled by configuring a custom SMTP provider in your Supabase Auth dashboard.
+- **First Admin Account Creation**: Register an account through the app, then run this SQL statement in the Supabase SQL editor to bootstrap admin status:
+  ```sql
+  update public.user_profiles set role = 'admin' where email = 'your-email@example.com';
+  ```
+
+---
+
+## 🤖 AI Capabilities
+
+RescueLens AI leverages Google's Gemini Vision models to automatically extract structured incident metadata directly from disaster photos.
+
+The AI triage pipeline performs:
+- **Disaster Scene Understanding**: Identifies class categories (e.g. fire, road accident, flood, building collapse).
+- **Hazard Spotting**: Detects individual critical signals (e.g. presence of fire, smoke, water, structural integrity damage, trapped/injured individuals).
+- **Severity Estimation**: Evaluates and reports hazard threat levels.
+- **Damage Assessment**: Determines priority scores (0 to 100) using a deterministic backend risk engine.
+- **Timeline Generation**: Records real-time triage processing history.
+- **Operational Recommendation**: Suggests corresponding responder teams and equipment deployments (SCBA gear, boats, concrete saws, jaws of life).
+
+---
+
+## ✨ Features
+
+### Authentication & Profiles
+- **Supabase Auth Integration**: Secure email/password login, password recovery, and token validation.
+- **Self-Healing Profile Creation**: Database trigger and backend validation automatically provision user profile rows, self-healing legacy accounts if profile mismatches are encountered.
+- **Role-Based Access Control (RBAC)**: Fine-grained permissions matching Viewer, Responder, and Admin workflows.
+
+### Citizen / Viewer Portal
+- **Report Emergency**: Upload disaster photos for instant analysis.
+- **My History**: Track previous reports in a personalized list. Other users' reports are securely hidden from the citizen.
+- **Interactive Reports**: Download authenticated PDF reports containing timeline events and contributing factors.
+
+### Responder Dashboard
+- **Emergency Ops Queue**: A real-time dispatch list detailing Type, Severity, Priority, Location, and Reported Date.
+- **Active Operations Panel**: Tracks dispatches for Fire, Medical, Road Accident, and Flood dispatches.
+- **Action Workflow**: Interactive *Accept*, *Dispatch*, and *Resolve* transitions backed by persistent Client-Side tracking state.
+- **Distribution Analytics**: Pie charts and Area charts showing incident severity, categories, and triage frequency.
+- **Case Profile Drawer**: View uploaded photos, AI summary metrics, and recommended equipment.
+
+### Administrative Control Center
+- **User Registers**: List registered profiles, last login times, and created dates.
+- **Role Administration**: Promote or demote users directly from the user registry table.
+- **Incident Inventory Audit**: Audit and delete incident records from the system.
+- **System Settings**: Route active LLM models (e.g., Gemini 3.5 Flash) and monitor CPU/Database latency metrics.
+
+---
+
+## 🏗️ System Architecture
+
+```text
+       Users (Citizen, Responder, Admin)
+                       │
+                       ▼
+            React + Vite (Frontend)
+                       │
+                     HTTPS
+                       ▼
+                FastAPI Backend
+                       │
+       ┌───────────────┼───────────────┐
+       ▼               ▼               ▼
+   Gemini AI   Supabase DB & RLS   Supabase Storage
 ```
-RescueLens/
-├── frontend/          React + Vite + Tailwind
-├── backend/            FastAPI
-├── docs/
-│   ├── ARCHITECTURE.md
-│   └── supabase_schema.sql
-└── README.md
-```
 
-## Quick start
+---
 
-### 1. Supabase
+## 💻 Tech Stack
 
-1. Create a project at supabase.com.
-2. Open the SQL editor and run `docs/supabase_schema.sql` (fresh project) —
-   this now includes the `incidents`/`detections` tables **and** the
-   `user_profiles` table + auth trigger. If you already have an older
-   database, run the migrations in `docs/migrations/` in order instead
-   (001 adds the incident timeline, 002 adds authentication).
-3. Create a **public** storage bucket named `incident-images`.
-4. Copy your Project URL, `anon`/`public` key, and `service_role` key
-   (Project Settings → API). The backend uses the service-role key; the
-   frontend uses the anon key.
-5. In Authentication → Providers, confirm Email is enabled. In
-   Authentication → URL Configuration, add `http://localhost:5173/**`
-   (and your deployed frontend URL later) to the redirect allow-list, or
-   the email verification / password-reset links won't work.
-6. **First admin account**: sign up through the app once (this creates a
-   `user_profiles` row defaulted to `viewer`), then run in the SQL editor:
+- **Frontend**: React, Vite, Recharts, Lucide Icons, Tailwind CSS, Vanilla CSS.
+- **Backend**: FastAPI, Python, Pydantic, Uvicorn, httpx.
+- **Database & Storage**: Supabase PostgreSQL, Supabase Auth, Supabase Storage.
+- **Artificial Intelligence**: Google GenAI SDK (Gemini Vision Model API).
+- **Deployment**: Vercel (Frontend), Render (Backend).
+
+---
+
+## 🗄️ Database Schema
+
+The database uses PostgreSQL schemas with the following components:
+- **`user_profiles`**: Linked to `auth.users`, stores user names, metadata, emails, and active system roles.
+- **`incidents`**: Stores image links, priority scores, severity levels, recommended teams, and timeline records. Includes `user_id` to establish granular report ownership.
+- **`detections`**: Tracks specific threat flags (e.g., fire, smoke, trapped, injured).
+- **`schema_info`**: Database view auditing triggers and table policies for the backend.
+
+---
+
+## 🛠️ Development Improvements
+
+The project has been hardened with several production enhancements:
+- **Automatic Database Schema Validation**: Startup validation checks confirm required columns exist, preventing runtime crashes.
+- **Robust AI Response Containment**: A production-grade JSON parser parses raw outputs, extracts JSON objects from conversational text preambles, and retries the Gemini API once using a stricter prompt structure if parsing or validation fails.
+- **API Error Handling**: Catches parsing, connection, and auth failures, transforming them into clean 502/403 status returns instead of leaving unhandled thread exceptions.
+- **Supabase Row-Level Security (RLS)**: Enforces policies on the backend database so that Viewers can only select or write their own reports.
+
+---
+
+## ⚙️ Development Setup
+
+### Prerequisites
+- Python 3.10+
+- Node.js 18+
+- Supabase Account
+
+### 1. Database Setup
+1. Run `docs/supabase_schema.sql` in the **Supabase SQL Editor**.
+2. Run the migrations under `docs/migrations/` sequentially:
+   - `001_add_incident_timeline.sql`
+   - `002_add_user_profiles.sql`
+   - `003_add_incident_user_relationship.sql`
+3. Create a public storage bucket named `incident-images`.
+4. In the SQL Editor, run:
    ```sql
-   update user_profiles set role = 'admin' where email = 'you@example.com';
+   NOTIFY pgrst, 'reload schema';
    ```
-   Every other new signup stays `viewer` until an admin promotes them
-   from the Profile → admin tooling (`PATCH /profile/users/{id}/role`).
 
-### 2. Backend
-
+### 2. Backend Installation
 ```bash
 cd backend
-python -m venv venv && source venv/bin/activate   # Windows: venv\Scripts\activate
+python -m venv venv
+# Windows: venv\Scripts\activate | Unix: source venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env   # fill in GEMINI_API_KEY, SUPABASE_URL, SUPABASE_SERVICE_KEY
+cp .env.example .env
+# Fill in: GEMINI_API_KEY, SUPABASE_URL, and SUPABASE_SERVICE_KEY (service role)
 uvicorn app.main:app --reload --port 8000
 ```
+API docs are available at `http://localhost:8000/docs`.
 
-Visit `http://localhost:8000/docs` for the interactive API docs.
-
-### 3. Frontend
-
+### 3. Frontend Installation
 ```bash
 cd frontend
 npm install
-cp .env.example .env   # set VITE_API_URL, VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY
+cp .env.example .env
+# Fill in: VITE_API_URL, VITE_SUPABASE_URL, and VITE_SUPABASE_ANON_KEY
 npm run dev
 ```
+Open `http://localhost:5173`.
 
-Visit `http://localhost:5173`.
+---
 
-## Things you must update before this runs
+## ☁️ Deployment
 
-This scaffold is code-complete but **not runnable out of the box** — a few
-things need real credentials or a decision from you:
+- **Frontend**: Deploy `frontend/` to **Vercel** (Vite framework preset). Set the same environment variables as your local `.env`.
+- **Backend**: Deploy `backend/` to **Render** Web Service:
+  - **Build Command**: `pip install -r requirements.txt`
+  - **Start Command**: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+  - Set the matching environment variables.
 
-1. **`backend/.env`** — add a real `GEMINI_API_KEY` (Google AI Studio) and your
-   Supabase `SUPABASE_URL` / `SUPABASE_SERVICE_KEY`. Nothing works without these.
-2. **Run `docs/supabase_schema.sql`** in your Supabase project before the first
-   request — the backend assumes the `incidents` and `detections` tables and the
-   `incident-images` bucket already exist.
-3. **Gemini model access** — the model is set via `GEMINI_MODEL` in `backend/.env`
-   (defaults to `gemini-3.5-flash`). If Google deprecates that model or your key
-   lacks access to it, update this one env var — no code change needed.
-4. **CORS origin** — `FRONTEND_ORIGIN` in `backend/.env` defaults to
-   `http://localhost:5173`. Update it once you deploy the frontend (Vercel URL).
-5. **`frontend/.env` → `VITE_API_URL`** — point this at your deployed backend
-   (Render URL) before deploying the frontend, or every request will try to hit
-   `localhost:8000`.
-6. **`npm install`** hasn't been run in this scaffold (no network access when it
-   was generated) — the `node_modules` folder does not exist yet, so run it
-   locally before `npm run dev`.
-7. **Deployment**: this scaffold doesn't include `vercel.json` / `render.yaml`.
-   Deploy `frontend/` to Vercel (framework preset: Vite) and `backend/` to
-   Render (build: `pip install -r requirements.txt`, start:
-   `uvicorn app.main:app --host 0.0.0.0 --port $PORT`) — set the same env vars
-   there as in your local `.env` files.
-8. **Auth**: see the "Authentication" section below for the full architecture,
-   migration order, and troubleshooting.
-9. **Not yet implemented from the "bonus features" list** (brief said pick
-   2–3, so I didn't build all of them): voice narration, image-comparison
-   ("has it worsened"), multi-language reports, and QR-code sharing. PDF
-   export **is** implemented (`GET /incident/{id}/report.pdf`, wired to the
-   Result and History pages). Pick 1–2 more if you want extra polish.
-10. **Loading page** — the brief lists "Loading Screen" as its own page; I
-    implemented it as an in-place state on the Upload page instead of a
-    separate route, since the whole flow is a single upload → analyze call
-    and a route change mid-request adds complexity without benefit. Easy to
-    split out into `/loading` later if you want the URL to reflect it.
-11. **Image inputs for testing** — you'll need real or stock disaster photos
-    to get meaningful Gemini output; the risk engine only scores what Gemini
-    actually detects.
+---
 
-## Authentication
+## 🔒 Security
+- **JWT Session Verification**: Access tokens are validated against Supabase Auth on every request.
+- **Granular API Guarding**: Router endpoints use dependencies to check user permissions:
+  - `CAN_ANALYZE`: Opens report submission.
+  - `CAN_VIEW_ALL_INCIDENTS` & `CAN_MANAGE_INCIDENTS`: Grants responders and admins queue dispatches.
+  - `CAN_MANAGE_USERS` & `CAN_MANAGE_ROLES`: Restricts system settings and user roles to admins only.
 
-**Architecture.** The frontend talks to Supabase Auth directly (email/password,
-verification emails, password reset) — the backend never sees a password. Every
-protected backend request carries `Authorization: Bearer <supabase access
-token>`; `app/services/auth.py` validates that token against Supabase and loads
-the caller's role from `user_profiles`. There is deliberately no
-`backend/app/routers/auth.py` / `/login` / `/register` backend endpoints —
-re-implementing what Supabase Auth already does correctly would mean handling
-passwords ourselves for no benefit. See `docs/ARCHITECTURE.md` for the full
-diagram.
+---
 
-**Roles** are centralized in one place, not scattered as string literals:
-`backend/app/models/roles.py` (`Role` enum) and `frontend/src/constants/roles.js`
-(kept in sync by hand — there are only three values, so this doesn't need
-codegen). Every `require_role(...)` call and every frontend role check
-references these constants.
+## 🚀 Future Enhancements
+- **Live GIS Integration**: Map and coordinate locations on geospatial grids.
+- **Multi-channel Notifications**: SMS dispatch warnings and mobile push notifications for responder networks.
+- **Offline Sync**: Allow citizens to save incident details locally and sync automatically when internet is restored.
 
-**Migration order** (`docs/migrations/`, run once each in the Supabase SQL
-editor, in order):
-1. `001_add_incident_timeline.sql` — adds `incidents.timeline` and
-   `incidents.contributing_factors`.
-2. `002_add_user_profiles.sql` — creates `user_profiles`, RLS policies, the
-   `on_auth_user_created` trigger, **and backfills a profile for any
-   `auth.users` row that predates the trigger**. Every statement in this file
-   is idempotent — re-running it (e.g. after adding a column, or just to
-   double-check) is always safe and never creates duplicates.
+---
 
-A brand-new Supabase project only needs `docs/supabase_schema.sql` (which
-already includes everything above) — the numbered migrations in
-`docs/migrations/` are for bringing an *existing* database up to date.
+## 📄 License
 
-**Self-healing profiles.** The trigger in migration 002 covers every signup
-going forward, and the backfill in that same migration covers every account
-that existed before the trigger did. As a third layer, `get_current_user` in
-`app/services/auth.py` will create a missing profile on the spot (via an
-idempotent `upsert`, safe under concurrent requests) if it ever encounters an
-authenticated user with no profile row — so this class of bug (`403 No profile
-found`) cannot recur even in an edge case the first two layers didn't
-anticipate. No manual SQL `insert` is ever required for this.
-
-**Startup validation.** On boot, the backend (`app/services/startup_checks.py`)
-queries the exact tables/columns it depends on (`incidents.timeline`,
-`incidents.contributing_factors`, `detections`, `user_profiles`) and refuses to
-start if any are missing, logging exactly which migration file to run rather
-than letting it surface later as a confusing runtime error on whatever endpoint
-a user happens to hit first. If your backend won't start, **read the terminal**
-— the error names the exact file to run.
-
-**Bootstrapping your first admin.** Every signup defaults to `viewer`
-(least-privilege). This is not a workaround — any role-based system needs a way
-to designate its first admin, since nobody starts as one. Sign up through the
-app once, then run:
-```sql
-update user_profiles set role = 'admin' where email = 'you@example.com';
-```
-After that, promote everyone else through the app itself
-(`PATCH /profile/users/{id}/role`) — no more manual SQL needed.
-
-**Troubleshooting**
-
-| Symptom | Cause | Fix |
-|---|---|---|
-| Backend won't start, error mentions a missing table/column | A migration hasn't been run | Read the exact file name in the startup error, run it in Supabase SQL editor |
-| `403 No profile found` on a previously-working account | Rare — self-heal in `get_current_user` should prevent this, but if RLS or a permissions change blocks it, you'll see a 500 instead with a specific message | Re-run `002_add_user_profiles.sql` (idempotent, safe) |
-| Analyze/Upload page redirects you to `/` with no error | Fixed — `ProtectedRoute` now shows the specific profile-load error instead of silently redirecting | If you still see a silent redirect, you're on an older frontend build |
-| `401` mid-session | Session expired or was revoked elsewhere | Frontend now auto-signs-out and redirects to `/login` (see `frontend/src/services/api.js` response interceptor) |
-| Email verification / reset links don't work | Redirect URL not allow-listed | Supabase → Authentication → URL Configuration → add your frontend origin |
-
-
-
-Dark navy base (`#0B1120`), alert red (`#DC2626`) and amber (`#F59E0B`) for
-severity, and a signature cyan (`#2DD4BF`) borrowed from thermal/night-vision
-imaging — the one accent color that's distinctly RescueLens rather than
-generic "emergency red." Display type is Space Grotesk, body is Inter, data
-readouts use JetBrains Mono. See `frontend/tailwind.config.js` for the full
-token set.
-
-## API reference
-
-All routes below except health checks require `Authorization: Bearer <supabase access token>`.
-The frontend attaches this automatically once you're signed in.
-
-| Method | Path | Role required | Description |
-|---|---|---|---|
-| POST | `/upload` | admin, responder | Upload a raw image to storage only |
-| POST | `/analyze` | admin, responder | Full pipeline: upload → Gemini → risk score → save |
-| GET | `/history?limit=50` | any authenticated | List saved incidents, newest first |
-| GET | `/incident/{id}` | any authenticated | Single incident detail |
-| DELETE | `/incident/{id}` | admin | Delete an incident |
-| GET | `/incident/{id}/report.pdf` | any authenticated | Download the incident as a PDF |
-| GET | `/profile/me` | any authenticated | Current user's profile |
-| PATCH | `/profile/me` | any authenticated | Update own name/phone/department/organization |
-| GET | `/profile/users` | admin | List all users |
-| PATCH | `/profile/users/{id}/role` | admin | Change another user's role |
-
-See `docs/ARCHITECTURE.md` for the full pipeline diagram and design rationale.
+This project is licensed under the MIT License - see the LICENSE file for details.
