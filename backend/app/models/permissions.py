@@ -1,5 +1,9 @@
+"""
+Role-based access control (RBAC) permissions definitions and verification mapping.
+"""
 from enum import Enum
 from app.models.roles import Role
+
 
 class Permission(str, Enum):
     CAN_ANALYZE = "can_analyze"
@@ -12,7 +16,8 @@ class Permission(str, Enum):
     CAN_MANAGE_INCIDENTS = "can_manage_incidents"
     CAN_VIEW_SETTINGS = "can_view_settings"
 
-ROLE_PERMISSIONS = {
+
+ROLE_PERMISSIONS: dict[Role, set[Permission]] = {
     Role.ADMIN: {
         Permission.CAN_ANALYZE,
         Permission.CAN_VIEW_HISTORY,
@@ -35,12 +40,15 @@ ROLE_PERMISSIONS = {
     Role.VIEWER: {
         Permission.CAN_ANALYZE,
         Permission.CAN_VIEW_HISTORY,
-    }
+    },
 }
 
+
 def has_permission(role: str, permission: Permission) -> bool:
+    """Checks whether a user role string possesses the specified Permission."""
     try:
         r = Role(role)
         return permission in ROLE_PERMISSIONS.get(r, set())
     except ValueError:
         return False
+

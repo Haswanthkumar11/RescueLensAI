@@ -18,6 +18,7 @@ via an idempotent upsert. No manual SQL is ever required.
 """
 import logging
 
+from typing import Callable, Any
 from fastapi import Depends, Header, HTTPException
 from fastapi.concurrency import run_in_threadpool
 
@@ -99,7 +100,7 @@ async def get_current_user(authorization: str | None = Header(default=None)) -> 
     return {"id": user.id, "email": user.email, **profile}
 
 
-def require_role(*allowed_roles: Role):
+def require_role(*allowed_roles: Role) -> Callable[..., Any]:
     """FastAPI dependency factory: Depends(require_role(Role.ADMIN, Role.RESPONDER))"""
 
     async def _dependency(current_user: dict = Depends(get_current_user)) -> dict:
@@ -114,7 +115,7 @@ def require_role(*allowed_roles: Role):
     return _dependency
 
 
-def require_permission(permission: Permission):
+def require_permission(permission: Permission) -> Callable[..., Any]:
     """FastAPI dependency factory: Depends(require_permission(Permission.CAN_MANAGE_USERS))"""
 
     async def _dependency(current_user: dict = Depends(get_current_user)) -> dict:
@@ -127,4 +128,5 @@ def require_permission(permission: Permission):
         return current_user
 
     return _dependency
+
 

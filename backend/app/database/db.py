@@ -17,7 +17,7 @@ Config loading notes:
 from functools import lru_cache
 from pathlib import Path
 
-from pydantic import field_validator
+from pydantic import ValidationInfo, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from supabase import create_client, Client
 
@@ -44,7 +44,7 @@ class Settings(BaseSettings):
 
     @field_validator("gemini_api_key", "supabase_url", "supabase_service_key")
     @classmethod
-    def _not_blank(cls, value: str, info) -> str:
+    def _not_blank(cls, value: str, info: ValidationInfo) -> str:
         if not value or not value.strip():
             raise ValueError(
                 f"{info.field_name.upper()} is missing or empty. "

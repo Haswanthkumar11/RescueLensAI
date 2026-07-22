@@ -55,10 +55,13 @@ app.include_router(profile.router)
 
 
 @app.get("/")
-async def root():
+async def root() -> dict[str, str]:
+    """Root endpoint returning service status information."""
     return {"status": "ok", "service": "RescueLens AI backend"}
 
 
 @app.get("/health")
-async def health():
+async def health() -> dict[str, str]:
+    """Health check probe endpoint for uptime monitoring."""
     return {"status": "healthy"}
+
