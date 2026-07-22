@@ -16,6 +16,7 @@ import Profile from './pages/Profile'
 import ResponderDashboard from './pages/ResponderDashboard'
 import AdminDashboard from './pages/AdminDashboard'
 
+// Potentially unused. Left intentionally to preserve backwards compatibility.
 function PlaceholderDashboard({ title, description, requiredPermission }) {
   return (
     <section className="mx-auto max-w-4xl px-6 py-16">
